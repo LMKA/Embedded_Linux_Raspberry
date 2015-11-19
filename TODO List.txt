@@ -1,0 +1,3 @@
+Faire le décodage de la reception
+Faire la réception
+Faire le système d'ACK
