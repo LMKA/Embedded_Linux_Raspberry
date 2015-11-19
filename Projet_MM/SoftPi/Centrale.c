@@ -61,7 +61,7 @@ int main()
 		if(0==rc)
 		{
 			printf("activation de l'envoi de donnee\n");
-			rc = pthread_create(&PthId2, NULL, reception_trames, NULL); // TODO Recevoir les trames
+			rc = pthread_create(&PthId2, NULL, reception_trame_pi, NULL); // TODO Recevoir les trames
 			assert(0 == rc);
 		}
 	}

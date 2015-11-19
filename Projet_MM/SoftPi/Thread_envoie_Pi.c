@@ -20,13 +20,11 @@ void envoie_frequence()
 	FILE* fichier = fopen("../Site/frequency.txt","r");
 	
 	if(fichier)
-	{
 		fscanf(fichier, "%d", &freq);
-	}
 	else
 		printf("Erreur ouverture fichier frequency.txt !!!\n");
 	
-	// Création de la trame depuis la frequence (int)
+	// Creation de la trame depuis la frequence (int)
 	trame[8] = freq%10;
 	trame[7] = (freq/10)%10;
 	trame[6] = (freq/100)%10;

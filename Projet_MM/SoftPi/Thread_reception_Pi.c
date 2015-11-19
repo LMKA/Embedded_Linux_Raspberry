@@ -4,13 +4,13 @@
 
 void save_trame_temperature(char* trame)
 {
-	FILE*	fichier		= fopen("/home/pi/public_html/donnees_temperature.txt", "a");
+	FILE*		fichier			= fopen("/home/pi/public_html/donnees_temperature.txt", "a");
 	double	temperature = 0;
-	int		heure		= 0,
-			min			= 0,
-			jour		= 0,
-			mois		= 0,
-			annee		= 0;
+	int			heure				= 0,
+					min					= 0,
+					jour				= 0,
+					mois				= 0,
+					annee				= 0;
 
 	if(fichier)
 	{
@@ -28,7 +28,7 @@ void save_trame_temperature(char* trame)
 			if(trame[3] == '-')
 				temperature = 0 - temperature;
 				
-		fprintf(fichier, " - %d/%d/%d - %d:%d > %.2f\n", jour, mois, annee, heure, min, temperature);
+		fprintf(fichier, " - %d/%d/%d - %d:%d > %.2f °C\n", jour, mois, annee, heure, min, temperature);
 		
 		if(fclose(fichier) == EOF)
 			printf("Erreur lors de la fermeture du fichier donnees_temperature.txt\n");
