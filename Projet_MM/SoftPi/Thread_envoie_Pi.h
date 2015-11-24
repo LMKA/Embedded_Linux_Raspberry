@@ -8,6 +8,7 @@
 
 void envoie_ACK();
 void envoie_STOP();
+int load_frequence();
 void envoie_frequence();
 
 int open_port(void);

@@ -1,7 +1,6 @@
 #include "Thread_reception_Pi.h"
 
 
-
 void save_trame_temperature(char* trame)
 {
 	FILE*		fichier			= fopen("/home/pi/public_html/donnees_temperature.txt", "a");

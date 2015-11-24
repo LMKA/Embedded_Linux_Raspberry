@@ -11,19 +11,34 @@ void envoie_ACK()
 void envoie_STOP()
 {
 	char trame[] = "Q03STOPW"; // Trame d'extinction
+	
+	// Envoie sur le port
+}
+
+int load_frequence()
+{
+	FILE*		fichier = fopen("../Site/frequency.txt", "r");
+	int			freq		= 0;
+	
+	if(fichier)
+	{
+		fscanf(fichier, "%d", &freq);
+		
+		if(fclose(fichier) == EOF)
+			printf("Erreur lors de la fermeture du fichier frequency.txt\n");
+	}
+	else
+		printf("Erreur lors de l'ouverture du fichier frequency.txt\n");
+	
+	return freq;
 }
 
 void envoie_frequence()
 {
 	char	trame[] = "Z02000060W"; // Trame par defaut Frequence 1/60 Hz
-	int		freq	= 0;
-	FILE* fichier = fopen("../Site/frequency.txt","r");
-	
-	if(fichier)
-		fscanf(fichier, "%d", &freq);
-	else
-		printf("Erreur ouverture fichier frequency.txt !!!\n");
-	
+	int		freq		= load_frequence();;
+
+
 	// Creation de la trame depuis la frequence (int)
 	trame[8] = freq%10;
 	trame[7] = (freq/10)%10;
