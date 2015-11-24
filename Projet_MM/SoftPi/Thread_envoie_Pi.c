@@ -15,6 +15,7 @@ void envoie_STOP()
 	char trame[] = "Q03STOPW"; // Trame d'extinction
 	
 	// Envoie sur le port
+	file_enqueue(&fileAttenteTrame, trame);
 }
 
 int load_frequence()

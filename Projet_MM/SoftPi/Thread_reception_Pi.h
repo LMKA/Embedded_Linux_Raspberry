@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "../File/File.h"
 
 
 void save_trame_temperature(char* trame);

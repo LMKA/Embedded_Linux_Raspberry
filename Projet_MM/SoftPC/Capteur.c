@@ -2,70 +2,56 @@
 #include <assert.h>
 #include <string.>
 
-#include "file.h"
+#include "../File/File.h"
 
-#define TAILLE 20
+#define TAILLE_TRAME 20
 
 File* fileAttenteTrame = (File*) malloc(sizeof(File));
-char cmd_sync[]="*1111111111111111111";
-char* chaine_trame = (char *)&cmd_sync[0];
+char chaine[]="*1111111111111111111";
+char* chaine_trame = (char *)&chaine[0];
 
 int tempsAttente, frequency = 1;
+int recu = 0; // REception trame
+
+
 int fd;
 
-/**
-*	Fonction d'envoi des trames
-*	Les trames sont mise dans une file. Cette fonction envoye les trames une par une
-*/
-void* envoie_trames(void* arg) /* Fonction Thread */
+int open_port(void)
 {
-	int i;
-	FILE* fichier;
+  struct termios options;
+  int fd,i;
+//  fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+  fd = open("/dev/ttyAMA0", O_RDWR); // open device for read&write
+  if (fd==-1)
+    printf("Erreur ouverture port !!!\n");
+  else
+  {
+    fcntl(fd,F_SETFL,0);
+    fcntl(fd, F_SETFL, FNDELAY); //ne pas bloquer sur le read
+    tcgetattr(fd,&options);
+    usleep(10000);
+    cfsetospeed(&options,B115200);
+    cfsetispeed(&options,B115200);
+	options.c_cflag |= (CLOCAL | CREAD);
+    options.c_cflag &= ~PARENB; /* Parite   : none */
+    options.c_cflag &= ~CSTOPB; /* Stop bit : 1    */
+    options.c_cflag &= ~CSIZE;  /* Bits     : 8    */
+    options.c_cflag |= CS8;
+    options.c_cflag &= ~CRTSCTS;
+   // options.c_iflag &= ~(IXON);
+    options.c_iflag &= ~(IXON | IXOFF | IXANY);
+    options.c_oflag &= ~OPOST; // raw output
+    options.c_lflag &= ~(ICANON | ECHO | ECHONL|IEXTEN | ISIG);
+    // c_cc
+    options.c_cc[VMIN]= 1;
+    options.c_cc[VTIME]= 4;
+    tcflush(fd,TCIOFLUSH); // flushIO buffer
+    tcsetattr(fd, TCSANOW,&options); // set new configure immediately
+//    tcflush(fd,TCIOFLUSH);
+    usleep(10000);
+  }
 
-	while(1) /* Boucle à l'infini */
-	{
-		tempsAttente = 1./frequency;
-		
-		if(file_nombre(fileAttenteTrame) > 0) /* Element(s) dans la file */
-		{
-			// On envoie les trames par ordre d'arrivee
-			strcpy(chaine_trame,file_qeek(fileAttenteTrame)); /* Lecture de la tete de file */
-			file_dequeue(&fileAttenteTrame); /* Supprime l'element en tête de file*/
-
-			i = 0;
-			while(i < TAILLE && !chaine_trame[i] != '\0') /*envoi de la trame*/
-			{
-				write(fd, &chaine_trame[i], 1);
-				++i;
-			}
-		
-		
-			fichier = fopen("donne_envoye.txt", "r");/*ouverture fichier*/
-			
-			if(fichier)/*si le fcihier ne s'ouvre pas*/
-			{
-				fprintf(fichier, "%s", chaine_trame); /* Sauvegarde de la trame */
-			}
-			
-		}
-		usleep(100000); /* 0.1s */
-		tcflush(fd, TCIOFLUSH); /* effacer le flux de donnée apres utilisation*/
-	}
-	
-	pthread_exit(NULL); /* fin du thread */
-}
-
-
-void* simule_temperateur(void* arg) /* Fonction Thread */
-{
-	char *trame = &cmd_sync[0];
-	trame = (char*) trame_temperateur();
-
-	printf("%s \n", trame);
-	
-	usleep(tempsAttente * 1000000); /* Temps attente en seconde */
-	
-	file_enqueue(&fileAttenteTrame, trame_temperateur());
+  return fd;
 }
 
 // PC

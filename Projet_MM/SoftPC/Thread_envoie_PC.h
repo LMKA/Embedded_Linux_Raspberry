@@ -13,11 +13,17 @@
 
 
 
-#define ATTENTE for(i=0;i<100000;i++)
+#define ATTENTE for(i=0;i<100000;i++);
 
-char* envoie_ACK();
-char* envoie_trame();
-int open_port(void);
+void	envoie_ACK();
+void	envoie_STOP();
+int		load_frequence();
+int		generer_temperature();
+char*	generer_trame_temperature();
+void* simule_temperateur(void* arg);
+void	save_trame_envoyer(char trame[]);
+void*	envoie_trames(void* arg);
+
 
 #endif
 
