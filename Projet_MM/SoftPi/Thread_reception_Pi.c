@@ -1,6 +1,7 @@
 #include "Thread_reception_Pi.h"
 
 
+
 void save_trame_temperature(char* trame)
 {
 	FILE*		fichier			= fopen("/home/pi/public_html/donnees_temperature.txt", "a");
@@ -37,9 +38,27 @@ void save_trame_temperature(char* trame)
 }
 
 
-void reception_trame_pi(char* trame)
+void reception_trame_pi()
 {
-	if(trame != NULL)
+	int		i				= 0;
+	char	trame[TAILLE_TRAME + 1],
+				car			=	'';
+
+	while(1)
+	{
+		i = 0;
+		
+		// Lecture d'une trame depuis le port
+		do
+		{
+			if(read(fd, &car, 1) >= 1)
+			{
+				trame[i] = car;
+				++i;
+			}
+		}while(car != 'W' && i < TAILLE_TRAME);
+		
+		// Suivant le type de la trame on fait le traitement adequat
 		switch(trame[2])
 		{
 			case 0: // ACK
@@ -54,47 +73,7 @@ void reception_trame_pi(char* trame)
 			default:
 				printf("Erreur dans la forme de la trame !!!\n");
 		}
-}
-
-
-
-
-int open_port(void)
-{
-  struct termios options;
-  int fd,i;
-//  fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-  fd = open("/dev/ttyUSB0", O_RDWR);
-  if (fd==-1)
-    printf("Erreur ouverture port !!!\n");
-  else
-  {
-    fcntl(fd,F_SETFL,0);
-//    fcntl(fd, F_SETFL, FNDELAY); //ne pas bloquer sur le read
-    tcgetattr(fd,&options);
-    usleep(10000);
-    cfsetospeed(&options,B115200);
-    cfsetispeed(&options,B115200);
-	options.c_cflag |= (CLOCAL | CREAD);
-    options.c_cflag &= ~PARENB; /* Parite   : none */
-    options.c_cflag &= ~CSTOPB; /* Stop bit : 1    */
-    options.c_cflag &= ~CSIZE;  /* Bits     : 8    */
-    options.c_cflag |= CS8;
-    options.c_cflag &= ~CRTSCTS;
-   // options.c_iflag &= ~(IXON);
-    options.c_iflag &= ~(IXON | IXOFF | IXANY);
-    options.c_oflag &= ~OPOST; // raw output
-    options.c_lflag &= ~(ICANON | ECHO | ECHONL|IEXTEN | ISIG);
-    // c_cc
-    options.c_cc[VMIN]= 1;
-    options.c_cc[VTIME]= 4;
-    tcflush(fd,TCIOFLUSH); // flushIO buffer
-    tcsetattr(fd, TCSANOW,&options); // set new configure immediately
-//    tcflush(fd,TCIOFLUSH);
-    usleep(10000);
-  }
-
-  return fd;	
+	}
 }
 
 

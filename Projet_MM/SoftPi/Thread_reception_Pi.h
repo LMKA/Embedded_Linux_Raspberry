@@ -6,10 +6,9 @@
 #include <string.h>
 
 
-
 void save_trame_temperature(char* trame);
-void reception_trame_pi(char* trame);
-int open_port(void);
+void reception_trame_pi();
+
 
 
 
