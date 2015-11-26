@@ -1,6 +1,12 @@
 #include "Thread_reception_Pi.h"
 
-
+extern File* fileAttenteTrame;
+extern char	chaine[];
+extern char* chaine_trame;
+extern int tempsAttente;
+extern int frequency;
+extern int recu; // Reception trame
+extern int fd; // Pour l'utilisation du PORT
 
 void save_trame_temperature(char* trame)
 {
@@ -38,11 +44,11 @@ void save_trame_temperature(char* trame)
 }
 
 
-void reception_trame_pi()
+void* reception_trame_pi()
 {
 	int		i				= 0;
 	char	trame[TAILLE_TRAME + 1],
-				car			=	'';
+				car			=	'\0';
 
 	while(1)
 	{

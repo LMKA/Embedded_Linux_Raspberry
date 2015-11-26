@@ -3,9 +3,19 @@
 
 
 #include <stdio.h>
-#include <string.h>
-#include "File/File.h"
+#include <unistd.h>
+#include <string.h> 
+#include <stdlib.h> 
+#include <time.h>
+#include <math.h>
 
+#include <fcntl.h>
+#include <errno.h>
+#include <termios.h>
+#include <pthread.h>
+#include <assert.h>
+
+#include "File/File.h"
 
 #define TAILLE_TRAME 20
 
@@ -13,7 +23,8 @@ void envoie_ACK();
 void envoie_STOP();
 int load_frequence();
 void envoie_frequence();
-void* envoie_trames(void* arg);
+void save_trame_envoyer(char trame[]);
+void* envoie_trames();
 
 
 

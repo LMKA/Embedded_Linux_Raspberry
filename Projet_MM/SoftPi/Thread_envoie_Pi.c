@@ -1,4 +1,13 @@
 #include "Thread_envoie_Pi.h"
+#include "Thread_reception_Pi.h"
+
+extern File* fileAttenteTrame;
+extern char	chaine[];
+extern char* chaine_trame;
+extern int tempsAttente;
+extern int frequency;
+extern int recu; // Reception trame
+extern int fd; // Pour l'utilisation du PORT
 
 
 
@@ -53,9 +62,25 @@ void envoie_frequence()
 	
 	
 	// Envoie sur le port
+	file_enqueue(&fileAttenteTrame, trame);
 }
 
-void* envoie_trames(void* arg) /* Fonction Thread */
+void save_trame_envoyer(char trame[])
+{
+	FILE*		fichier =fopen("donnee_envoyer.txt", "r");
+			
+	if(fichier)
+	{
+		fprintf(fichier, "%s", trame); /* Sauvegarde de la trame */
+		
+		if(fclose(fichier) == EOF)
+			printf("Erreur : lors de la fermeture du fichier donnee_envoyer.txt\n");
+	}
+	else
+		printf("Erreur : lors de l'ouverture du fichier donnee_envoyer.txt\n");
+}
+
+void* envoie_trames() /* Fonction Thread */
 {
 	int 	i	= 0;
 

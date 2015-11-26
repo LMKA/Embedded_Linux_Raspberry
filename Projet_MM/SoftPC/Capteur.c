@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "./Thread_envoie_PC.h"

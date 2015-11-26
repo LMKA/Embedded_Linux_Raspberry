@@ -15,8 +15,9 @@
 #include "./Thread_reception_Pi.h"
 #include "File/File.h"
 
+#define TAILLE_TRAME 20
 
-File* fileAttenteTrame = (File*) malloc(sizeof(File));
+File* fileAttenteTrame = NULL;
 char	chaine[]="*1111111111111111111";
 char* chaine_trame = (char *)&chaine[0];
 
@@ -34,6 +35,8 @@ int main()
 {
 	pthread_t Thread_envoie;
 	pthread_t Thread_reception;
+	
+	fileAttenteTrame = (File*) malloc(sizeof(File));
 
 	int rc;
 	
@@ -61,7 +64,7 @@ int main()
 
 	
 	rc = pthread_join(Thread_reception, NULL);
-	rc = pthread_join(PthId2, NULL);
+	rc = pthread_join(Thread_envoie, NULL);
 	
 	return 0;
 }
@@ -70,7 +73,7 @@ int main()
 int open_port()
 {
   struct termios options;
-  int fd,i;
+  int fd;
 //  fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
   fd = open("/dev/ttyUSB0", O_RDWR);
   if (fd==-1)
