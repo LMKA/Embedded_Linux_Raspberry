@@ -4,10 +4,14 @@
 
 
 #include <stdio.h>
+#include "File/File.h"
 
 
-void* reception_freq(double *freq);
+#define TAILLE_TRAME 20
 
+
+
+void* reception_trame_pc();
 
 
 

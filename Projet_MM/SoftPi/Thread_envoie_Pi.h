@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "../File/File.h"
+#include "File/File.h"
 
 
 #define TAILLE_TRAME 20

@@ -11,16 +11,17 @@
 #include <termios.h>
 #include <time.h>
 
-
+#include "File/File.h"
 
 #define ATTENTE for(i=0;i<100000;i++);
 
+#define TAILLE_TRAME 20
+
 void	envoie_ACK();
 void	envoie_STOP();
-int		load_frequence();
 int		generer_temperature();
 char*	generer_trame_temperature();
-void* simule_temperateur(void* arg);
+void* simule_temperateur();
 void	save_trame_envoyer(char trame[]);
 void*	envoie_trames(void* arg);
 

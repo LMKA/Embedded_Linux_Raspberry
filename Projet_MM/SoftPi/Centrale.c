@@ -13,7 +13,7 @@
 
 #include "./Thread_envoie_Pi.h"
 #include "./Thread_reception_Pi.h"
-#include "../File/File.h"
+#include "File/File.h"
 
 
 File* fileAttenteTrame = (File*) malloc(sizeof(File));

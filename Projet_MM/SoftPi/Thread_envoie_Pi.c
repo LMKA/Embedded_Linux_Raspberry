@@ -57,7 +57,7 @@ void envoie_frequence()
 
 void* envoie_trames(void* arg) /* Fonction Thread */
 {
-	int 	i				= 0;
+	int 	i	= 0;
 
 	while(1)
 	{

@@ -1,20 +1,22 @@
 #include <pthread.h>
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "./Thread_envoie_PC.h"
 #include "./Thread_reception_PC.h"
-#include "../File/File.h"
+#include "File/File.h"
 
 
 #define TAILLE_TRAME 20
 
-File* fileAttenteTrame = (File*) malloc(sizeof(File));
+File* fileAttenteTrame = NULL;
 char	chaine[]="*1111111111111111111";
 char* chaine_trame = (char *)&chaine[0];
 
-int tempsAttente, frequency = 1;
-int recu = 0; // Reception trame
+int tempsAttente = 1, 
+		frequency = 1,
+		recu = 0; // Reception trame
 
 
 int fd;
@@ -28,9 +30,10 @@ int main()
 	pthread_t Thread_envoie;
 	pthread_t Thread_generation_temperature;
 
-	int rc, rd=0;
+	int rc;
 	void *retval;
 
+  fileAttenteTrame = (File*) malloc(sizeof(File));
 	printf("Lancement du capteur. . .\n");
 
 	fd = open_port(); /* open device for read&write*/
@@ -42,7 +45,7 @@ int main()
 	else
 	{
 		/* Recupere les messages */
-		rc = pthread_create(&Thread_reception, NULL, recuperation_trames, NULL);
+		rc = pthread_create(&Thread_reception, NULL, reception_trame_pc, NULL);
 		assert(0 == rc);
 		printf("Creation thread reception trames et ACK\n");
 		
@@ -63,8 +66,8 @@ int main()
 	}
 	
 
-	tcflush(a.fd, TCIOFLUSH);
-	close(a.fd);
+	tcflush(fd, TCIOFLUSH);
+	close(fd);
 	
 	return 0;
 }
@@ -73,7 +76,7 @@ int main()
 int open_port(void)
 {
   struct termios options;
-  int fd,i;
+  int fd;
 //  fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
   fd = open("/dev/ttyAMA0", O_RDWR); // open device for read&write
   if (fd==-1)

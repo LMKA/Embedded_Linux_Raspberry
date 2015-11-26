@@ -1,10 +1,20 @@
 #include "Thread_envoie_PC.h"
 
+
+extern	File* fileAttenteTrame;
+extern	char	chaine[];
+extern	char* chaine_trame;
+extern	int tempsAttente;
+extern	int frequency;
+extern	int recu;
+extern	int fd;
+
 void envoie_ACK()
 {
 	char trame[] = "Y00ACKW"; // Trame d'acquittement
 	
 	 // Envoie sur le port
+	 file_enqueue(&fileAttenteTrame, trame);
 }
 
 void envoie_STOP()
@@ -12,26 +22,8 @@ void envoie_STOP()
 	char trame[] = "Q03STOPW"; // Trame d'acquittement
 	
 	 // Envoie sur le port
+	 file_enqueue(&fileAttenteTrame, trame);
 }
-
-int load_frequence()
-{
-	FILE*		fichier = fopen("../Site/frequency.txt", "r");
-	int			freq		= 0;
-	
-	if(fichier)
-	{
-		fscanf(fichier, "%d", &freq);
-		
-		if(fclose(fichier) == EOF)
-			printf("Erreur lors de la fermeture du fichier frequency.txt\n");
-	}
-	else
-		printf("Erreur lors de l'ouverture du fichier frequency.txt\n");
-	
-	return freq;
-}
-
 
 
 int generer_temperature()
@@ -63,12 +55,12 @@ char* generer_trame_temperature()
 							trame[]	= "X01+21.501135081015W"; // Trame par defaut
 	int					temp		= 0;
 	
-  struct tm*	current_date; // Structure contenant la date actuelle
+  struct tm	*current_date; // Structure contenant la date actuelle
   time_t 			t;						// Structure du temps
   
   // Initialisation du temps
   t = time(NULL);
-  current_date = localtime(t);
+  current_date = localtime(&t);
 
 	temp = generer_temperature();
 
@@ -86,45 +78,47 @@ char* generer_trame_temperature()
   trame[7] = (temp%100)/10 + 48;
   trame[8] = temp%10 + 48;
   
-  trame[9] = current_date.tm_hour/10 + 48;
-  trame[10] = current_date.tm_hour%10 + 48;
+  trame[9] = current_date->tm_hour/10 + 48;
+  trame[10] = current_date->tm_hour%10 + 48;
   
-  trame[11] = current_date.tm_min/10 + 48;
-  trame[12] = current_date.tm_min%10 + 48;
+  trame[11] = current_date->tm_min/10 + 48;
+  trame[12] = current_date->tm_min%10 + 48;
   
-  trame[13] = current_date.tm_mday/10 + 48;
-  trame[14] = current_date.tm_mday%10 + 48;
+  trame[13] = current_date->tm_mday/10 + 48;
+  trame[14] = current_date->tm_mday%10 + 48;
   
-  trame[15] = current_date.tm_mon/10 + 48;
-  trame[16] = current_date.tm_mon%10 + 48;
+  trame[15] = current_date->tm_mon/10 + 48;
+  trame[16] = current_date->tm_mon%10 + 48;
   
-  trame[17] = (current_date.tm_year/10 - 100) + 48;
-  trame[18] = current_date.tm_year%10 + 48;
+  trame[17] = (current_date->tm_year/10 - 100) + 48;
+  trame[18] = current_date->tm_year%10 + 48;
 
   return trame;
 }
 
 
 // ---------------------------------------------------------------------
-void* simule_temperateur(void* arg) /* Fonction Thread */
+void* simule_temperateur() /* Fonction Thread */
 {
-	char *trame			= &chaine[0];
+	char *trame	= &chaine[0];
 	
-	trame			= generer_trame_temperature();
-	frequency	= load_frequence();
+	while(1)
+	{
+		trame			= generer_trame_temperature();
 
-	// On affiche la trame
-	printf("%s \n", trame);
-	
-	if(!frequence)
-		tempsAttente = 1./frequency;
-	else
-		printf("Erreur : frequence = 0\n");
-	
-	// A REVOIR !! (Temps de simulation doit etre inferieur au temps d'envoie de trames)
-	usleep(tempsAttente * 1000000); /* Temps attente en seconde */
-	
-	file_enqueue(&fileAttenteTrame, trame);
+		// On affiche la trame
+		printf("%s \n", trame);
+		
+		if(!frequency)
+			tempsAttente = 1./frequency;
+		else
+			printf("Erreur : frequence = 0\n");
+		
+		// A REVOIR !! (Temps de simulation doit etre inferieur au temps d'envoie de trames)
+		usleep(tempsAttente * 1000000); /* Temps attente en seconde */
+		
+		file_enqueue(&fileAttenteTrame, trame);
+	}
 }
 // ---------------------------------------------------------------------
 
@@ -168,6 +162,8 @@ void* envoie_trames(void* arg) /* Fonction Thread */
 				++i;
 			}
 			
+			usleep(100000); // 0.1
+			
 			// !!! IL FAUT ATTENDRE DE RECEVOIR ACK AVANT DE SAUVEGARDER LA TRAME COMME ETANT ENVOYER !!!
 			if(recu)
 				save_trame_envoyer(chaine_trame);
@@ -179,7 +175,7 @@ void* envoie_trames(void* arg) /* Fonction Thread */
 		}
 		
 		// Temps attente avant le prochain envoie (depant de la frequence)
-		usleep(1000000);
+		usleep(100000);
 		
 		tcflush(fd, TCIOFLUSH); /* effacer le flux de donnee apres utilisation*/
 	}
