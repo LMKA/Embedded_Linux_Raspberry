@@ -52,7 +52,7 @@ char* generer_trame_temperature()
 {
   
   char				signe		= '+', // Signe + par defaut
-							trame[]	= "X01+21.501135081015W"; // Trame par defaut
+							*trame	= "X01+21.501135081015W"; // Trame par defaut
 	int					temp		= 0;
 	
   struct tm	*current_date; // Structure contenant la date actuelle
@@ -143,7 +143,7 @@ void save_trame_envoyer(char trame[])
 *	Fonction d'envoi des trames
 *	Les trames sont mise dans une file. Cette fonction envoye les trames une par une
 */
-void* envoie_trames(void* arg) /* Fonction Thread */
+void* envoie_trames() /* Fonction Thread */
 {
 	int 	i				= 0;
 

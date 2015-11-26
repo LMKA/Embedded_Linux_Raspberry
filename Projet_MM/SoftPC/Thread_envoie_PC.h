@@ -23,7 +23,7 @@ int		generer_temperature();
 char*	generer_trame_temperature();
 void* simule_temperateur();
 void	save_trame_envoyer(char trame[]);
-void*	envoie_trames(void* arg);
+void*	envoie_trames();
 
 
 #endif
