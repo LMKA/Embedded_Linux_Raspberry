@@ -8,14 +8,19 @@
 	
 		<body>
 	
-			<h1>Centrale dédiée à la télésurveillance</h1>
-			<h4>Quentin Godbert - Edwige Neveu</h4>	
-			<h5> 25 novembre 2014 </h5>
-			<form action="cible.php" method="post"/>
+			<h1>Centrale de télésurveillance</h1>
+			<h3>Mehdi Lakbir - Morgan Perre</h3>	
+			<h5> 27 novembre 2015 </h5>
+			
+			
+			<form action="freq.php" method="post"/>
+			
 			<p>
-				A quelle fréquence souhaitez vous récupérer la température ?
-				<input type="text" name="valeur" value="1" size="5" /> Hz
-				<input type="submit" value="Valider"/>
+				Fréquence de recupération de température ?
+				
+				<input type="text" name="valeur" value="1" size="4" /> Hz
+				
+				<input type="submit" value="Envoyer"/>
 			</p>
 
 			<p>
@@ -37,7 +42,3 @@
 		</body>
 
 </html>
-
-<!aide : http://www.it-connect.fr/lire-et-ecrire-dans-un-fichier-en-php/>
-
-<!readfile($file); >

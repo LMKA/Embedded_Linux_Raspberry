@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title> Centrale de télésurveillance - Acceuil</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div class="content">
+                <a href="#"><img src="images/logo.png" alt="Heavencraft" /></a>
+                <h1>Centrale de télésurveillance</h1>
+                <h4>Mehdi Lakbir - Morgan Perre		/		 27 novembre 2015</h4>
+            </div>
+        </div>
+        <div id="menu">
+            <div class="content">
+                <p>
+                    <a href="#">Présentation</a>
+                </p>
+                <p>
+                    <a href="#">Projet</a>
+                </p>
+            </div>
+        </div>
+        <div id="news">
+            <div class="content">
+                <div id="news-text">
+				 <form action="freq.php" method="post"/>
+							
+					<p>
+						Fréquence de recupération de température ?
+						
+						<input type="text" name="valeur" value="1" size="4" /> Hz
+						
+						<input type="submit" value="Envoyer"/>
+					</p>
+					
+					<!-- PHP pour la lecture des temperature ou highcharts ? -->
+                </div>
+            </div>
+        </div>
+
+        <div id="links">
+            <div class="content">
+                <div class="links-block">
+                    <h3 class="block-header">Informations</h3>
+                    <ul>
+                        <li><a href="#">Historique de travail</a></li>
+                        <li><a href="#">Présentation de l'équipe</a></li>
+                    </ul>
+                </div>
+				
+                <div class="links-block-last">
+                    <h3 class="block-header">Composant</h3>
+                    <ul>
+                        <li><a href="#">Capteur</a></li>
+                        <li><a href="#">Centrale</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+		
+        <div id="stats">
+            <div class="content">
+                <h3 class="block-header">Centrale  : <span class="server-ip">ADRESSE IP</span></h3>
+            </div>
+        </div>
+		
+        <div id="footer">
+            <div class="content">
+                <p id="copyright">M&M &copy; 2015. Tous droits réservés.</p>
+                <p id="organization">Projet de système embarqué.</p>
+            </div>
+        </div>
+    </body>
+</html>
