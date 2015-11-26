@@ -152,7 +152,6 @@ void save_trame_envoyer(char trame[])
 void* envoie_trames(void* arg) /* Fonction Thread */
 {
 	int 	i				= 0;
-	FILE* fichier = NULL;
 
 	while(1)
 	{

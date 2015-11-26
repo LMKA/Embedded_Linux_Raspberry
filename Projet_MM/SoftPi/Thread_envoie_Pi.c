@@ -7,14 +7,15 @@ void envoie_ACK()
 {
 	char trame[] = "Y00ACKW"; // Trame d'acquittement
 	
-	// Envoie sur le port
+	// Envoie sur le port (enfiler)
+	file_enqueue(&fileAttenteTrame, trame);
 }
 
 void envoie_STOP()
 {
 	char trame[] = "Q03STOPW"; // Trame d'extinction
 	
-	// Envoie sur le port
+	// Envoie sur le port (enfiler)
 	file_enqueue(&fileAttenteTrame, trame);
 }
 
@@ -54,7 +55,44 @@ void envoie_frequence()
 	// Envoie sur le port
 }
 
+void* envoie_trames(void* arg) /* Fonction Thread */
+{
+	int 	i				= 0;
 
+	while(1)
+	{
+		if(file_nombre(fileAttenteTrame) > 0) /* Element(s) dans la file */
+		{
+			// On envoie les trames par ordre d'arrivee
+			strcpy(chaine_trame, file_qeek(fileAttenteTrame)); /* Lecture de la tete de file */
+			file_dequeue(&fileAttenteTrame); /* Supprime l'element en tête de file*/
 
+			i = 0;
+			while(i < TAILLE_TRAME && !chaine_trame[i] != '\0') /*envoi de la trame*/
+			{
+				write(fd, &chaine_trame[i], 1);
+				++i;
+			}
+			
+			// !!! IL FAUT ATTENDRE DE RECEVOIR ACK AVANT DE SAUVEGARDER LA TRAME COMME ETANT ENVOYER !!!
+			if(recu)
+				save_trame_envoyer(chaine_trame);
+			else
+				// Si la centrale n'a pas recu la trame
+				file_enqueue(&fileAttenteTrame, chaine_trame);
+			
+			
+		}
+		
+		// Temps attente avant le prochain envoie (depant de la frequence)
+		usleep(1000000);
+		
+		tcflush(fd, TCIOFLUSH); /* effacer le flux de donnee apres utilisation*/
+	}
+	
+	pthread_exit(NULL); /* fin du thread */
+}
+
+// ---------------------------------------------------------------------
 
 

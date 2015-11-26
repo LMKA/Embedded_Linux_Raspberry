@@ -11,14 +11,61 @@
 #include <pthread.h>
 #include <assert.h>
 
-#include "Thread_envoie_Pi.h"
-#include "Thread_reception_Pi.h"
+#include "./Thread_envoie_Pi.h"
+#include "./Thread_reception_Pi.h"
 #include "../File/File.h"
 
 
 File* fileAttenteTrame = (File*) malloc(sizeof(File));
+char	chaine[]="*1111111111111111111";
+char* chaine_trame = (char *)&chaine[0];
+
+int tempsAttente, frequency = 1;
+int recu = 0; // Reception trame
 
 int fd; // Pour l'utilisation du PORT
+
+
+int open_port();
+
+
+
+int main()
+{
+	pthread_t Thread_envoie;
+	pthread_t Thread_reception;
+
+	int rc;
+	
+	
+	fd = open("/dev/ttyUSB0", O_RDWR); /*open device for read&write*/ //"/dev/ttyAMA0" ?
+	
+	if (fd == -1)
+	{
+		printf("Erreur durant l'ouverture du port !\n");
+	}
+  else
+	{
+		/* Recupere les messages */
+		rc = pthread_create(&Thread_reception, NULL, reception_trame_pi, NULL);
+		assert(0 == rc);
+		printf("Creation thread reception trames et ACK\n");
+		
+		/* Envoie les trames en tete de file */
+		rc = pthread_create(&Thread_envoie, NULL, envoie_trames, NULL);
+		assert(0 == rc);
+		printf("Creation thread envoie trame en tete de file\n");
+		
+		
+	}
+
+	
+	rc = pthread_join(Thread_reception, NULL);
+	rc = pthread_join(PthId2, NULL);
+	
+	return 0;
+}
+
 
 int open_port()
 {
@@ -58,64 +105,3 @@ int open_port()
   return fd;	
 }
 
-
-
-int main()
-{
-	pthread_t PthId0;
-	pthread_t PthId1;
-	pthread_t PthId2;
-	int rc;
-
-    /* Ouverture du fichier pour enregistrer les trames qui arrive du PC (capteur) */
-    /*fichier = fopen("trames", "w+");
-	
-    if(fichier == NULL)
-    {
-		 printf("Impossible d'ouvrir le fichier: trames\n");
-		 exit(1);
-	}
-	
-	if(fclose(fichier) == EOF)
-	{
-		printf("Probleme de fermeture du fichier liste_trame");
-		exit(1);
-	}
-	*/
-	
-	
-	fd = open("/dev/ttyUSB0", O_RDWR); /*open device for read&write*/ //"/dev/ttyAMA0" ?
-	
-	if (fd == -1)
-	{
-		printf("Erreur durant l'ouverture du port !\n");
-	}
-    else
-    {
-
-		printf("test de l'activation de l'envoi de donnee\n");
-		rc = pthread_create(&PthId0, NULL, synchro, NULL);
-		assert(0 == rc);
-		rc = pthread_join(PthId0, NULL);
-		rc = pthread_create(&PthId1,NULL, synchro, NULL);
-		assert(0 == rc);
-
-		while(0!=rc)
-		{
-			printf("attente de l'envoi de l'activation du flux\n");
-			usleep(50000);
-		}
-		if(0==rc)
-		{
-			printf("activation de l'envoi de donnee\n");
-			rc = pthread_create(&PthId2, NULL, reception_trame_pi, NULL); // TODO Recevoir les trames
-			assert(0 == rc);
-		}
-	}
-
-	
-	rc = pthread_join(PthId1, NULL);
-	rc = pthread_join(PthId2, NULL);
-	
-	return 0;
-}

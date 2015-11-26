@@ -1,20 +1,74 @@
 #include <pthread.h>
 #include <assert.h>
-#include <string.>
+#include <string.h>
 
+#include "./Thread_envoie_PC.h"
+#include "./Thread_reception_PC.h"
 #include "../File/File.h"
+
 
 #define TAILLE_TRAME 20
 
 File* fileAttenteTrame = (File*) malloc(sizeof(File));
-char chaine[]="*1111111111111111111";
+char	chaine[]="*1111111111111111111";
 char* chaine_trame = (char *)&chaine[0];
 
 int tempsAttente, frequency = 1;
-int recu = 0; // REception trame
+int recu = 0; // Reception trame
 
 
 int fd;
+
+int open_port(void);
+
+// PC
+int main()
+{
+	pthread_t Thread_reception;
+	pthread_t Thread_envoie;
+	pthread_t Thread_generation_temperature;
+
+	int rc, rd=0;
+	void *retval;
+
+	printf("Lancement du capteur. . .\n");
+
+	fd = open_port(); /* open device for read&write*/
+	
+	if (fd == -1)
+	{
+		printf("Erreur durant l'ouverture du port !\n");
+	}
+	else
+	{
+		/* Recupere les messages */
+		rc = pthread_create(&Thread_reception, NULL, recuperation_trames, NULL);
+		assert(0 == rc);
+		printf("Creation thread reception trames et ACK\n");
+		
+		/* Envoie les trames en tete de file */
+		rc = pthread_create(&Thread_envoie, NULL, envoie_trames, NULL);
+		assert(0 == rc);
+		printf("Creation thread envoie trame en tete de file\n");
+		
+		/* Recupere les messages */
+		rc = pthread_create(&Thread_generation_temperature, NULL, simule_temperateur, NULL);
+		assert(0 == rc);
+		printf("Creation thread creation de la trame de temperature\n");
+		
+
+		rc = pthread_join(Thread_reception, &retval);
+		rc = pthread_join(Thread_envoie, &retval);
+		rc = pthread_join(Thread_generation_temperature, &retval);
+	}
+	
+
+	tcflush(a.fd, TCIOFLUSH);
+	close(a.fd);
+	
+	return 0;
+}
+
 
 int open_port(void)
 {
@@ -52,57 +106,4 @@ int open_port(void)
   }
 
   return fd;
-}
-
-// PC
-int main()
-{
-	pthread_t PthId0;
-	pthread_t PthId1;
-	pthread_t PthId2;
-	pthread_t PthId3;
-
-	int rc, rd=0;
-	void *retval;
-
-	printf("Lancement du capteur. . .\n");
-
-	fd = open_port(); /* open device for read&write*/
-	
-	if (fd == -1)
-	{
-		printf("Erreur durant l'ouverture du port !\n");
-	}
-    else
-    {
-		/* Recupere les messages */
-		rc = pthread_create(&PthId0, NULL, recuperation_trames, NULL);
-		assert(0 == rc);
-		printf("Creation thread reception trames et ACK\n");
-		
-		/* Envoie les trames en tete de file */
-		rc = pthread_create(&PthId1, NULL, envoie_trames, NULL);
-		assert(0 == rc);
-		printf("Creation thread envoie trame en tete de file\n");
-		
-		/* Recupere les messages */
-		rc = pthread_create(&PthId2, NULL, simule_temperateur, NULL);
-		assert(0 == rc);
-		printf("Creation thread creation de la trame de temperature\n");
-		
-		/*rc = pthread_create(&PthId3, NULL, ack_trame, NULL);
-		assert(0 == rc);
-		printf("Trame recue et validee\n");*/
-
-		rc = pthread_join(PthId0, &retval);
-		rc = pthread_join(PthId1, &retval);
-		rc = pthread_join(PthId2, &retval);
-		/*rc = pthread_join(PthId3, &retval);*/
-	}
-	
-
-	tcflush(a.fd, TCIOFLUSH);
-	close(a.fd);
-	
-	return 0;
 }
