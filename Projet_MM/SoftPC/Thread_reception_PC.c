@@ -1,7 +1,7 @@
 #include "Thread_reception_PC.h"
 
 
-extern	Queue* QueueAttenteTrame;
+extern	File* FileAttenteTrame;
 extern	char	chaine[];
 extern	char* chaine_trame;
 extern	int tempsAttente;
@@ -35,8 +35,8 @@ void* reception_trame_pc()
 			case 0: // ACK
 				// Traitement de l'ACK
 				break;
-			case 2: // FREQ
-				
+			case 2: // FREQ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				frequency = trame[3]*100000 + trame[4]*10000 + trame[5]*1000 + trame[6]*100 + trame[7]*10 + trame[3];
 				break;
 			case 3: // STOP
 				pthread_exit(NULL); /* fin du thread */

@@ -1,7 +1,7 @@
 #include "Thread_envoie_PC.h"
 
 
-extern	Queue* QueueAttenteTrame;
+extern	File* FileAttenteTrame;
 extern	char	chaine[];
 extern	char* chaine_trame;
 extern	int tempsAttente;
@@ -14,7 +14,7 @@ void envoie_ACK()
 	char trame[] = "Y00ACKW"; // Trame d'acquittement
 	
 	 // Envoie sur le port
-	 Queue_enqueue(&QueueAttenteTrame, trame);
+	 enfiler(FileAttenteTrame, FileAttenteTrame->fin, trame);
 }
 
 void envoie_STOP()
@@ -22,7 +22,7 @@ void envoie_STOP()
 	char trame[] = "Q03STOPW"; // Trame d'acquittement
 	
 	 // Envoie sur le port
-	 Queue_enqueue(&QueueAttenteTrame, trame);
+	 enfiler(FileAttenteTrame, FileAttenteTrame->fin, trame);
 }
 
 
@@ -117,7 +117,7 @@ void* simule_temperateur() /* Fonction Thread */
 		// A REVOIR !! (Temps de simulation doit etre inferieur au temps d'envoie de trames)
 		usleep(tempsAttente * 1000000); /* Temps attente en seconde */
 		
-		Queue_enqueue(&QueueAttenteTrame, trame);
+		enfiler(FileAttenteTrame, FileAttenteTrame->fin, trame);
 	}
 }
 // ---------------------------------------------------------------------
@@ -145,22 +145,23 @@ void save_trame_envoyer(char trame[])
 */
 void* envoie_trames() /* Fonction Thread */
 {
-	int 	i				= 0;
+	int 	i	= 0;
 
 	while(1)
 	{
-		if(Queue_nombre(QueueAttenteTrame) > 0) /* Element(s) dans la file */
+		if(FileAttenteTrame->taille > 0) /* Element(s) dans la file */
 		{
 			// On envoie les trames par ordre d'arrivee
-			strcpy(chaine_trame, Queue_qeek(QueueAttenteTrame)); /* Lecture de la tete de file */
-			Queue_dequeue(&QueueAttenteTrame); /* Supprime l'element en tête de file*/
+			strcpy(chaine_trame, file_donnee(FileAttenteTrame)); /* Lecture de la tete de file */
+			de_filer(FileAttenteTrame);
 
 			i = 0;
-			while(i < TAILLE_TRAME && !chaine_trame[i] != '\0') /*envoi de la trame*/
+			while(i < TAILLE_TRAME && !chaine_trame[i] != 'W') /*envoi de la trame*/
 			{
 				write(fd, &chaine_trame[i], 1);
 				++i;
 			}
+			write(fd, &chaine_trame[i], 1); // Ecrire le W aussi
 			
 			usleep(100000); // 0.1
 			
@@ -169,7 +170,7 @@ void* envoie_trames() /* Fonction Thread */
 				save_trame_envoyer(chaine_trame);
 			else
 				// Si la centrale n'a pas recu la trame
-				Queue_enqueue(&QueueAttenteTrame, chaine_trame);
+				enfiler(FileAttenteTrame, FileAttenteTrame->fin, trame);
 			
 			
 		}

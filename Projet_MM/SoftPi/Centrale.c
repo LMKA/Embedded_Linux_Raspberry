@@ -41,7 +41,7 @@ int main()
 	int rc;
 	
 	
-	fd = open("/dev/ttyUSB0", O_RDWR); /*open device for read&write*/ //"/dev/ttyAMA0" ?
+	fd = open_port();
 	
 	if (fd == -1)
 	{
@@ -73,7 +73,7 @@ int open_port()
   struct termios options;
   int fd;
 //  fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-  fd = open("/dev/ttyUSB0", O_RDWR);
+  fd = open("/dev/ttyAMA0", O_RDWR);
   if (fd==-1)
     printf("Erreur ouverture port !!!\n");
   else

@@ -6,12 +6,12 @@
 
 #include "Thread_envoie_PC.h"
 #include "Thread_reception_PC.h"
-#include "Queue.h"
+#include "File.h"
 
 
 #define TAILLE_TRAME 20
 
-Queue* QueueAttenteTrame = NULL;
+File* FileAttenteTrame = NULL;
 char	chaine[]="*1111111111111111111";
 char* chaine_trame = (char *)&chaine[0];
 
@@ -34,7 +34,7 @@ int main()
 	int rc;
 	void *retval;
 
-  QueueAttenteTrame = (Queue*) malloc(sizeof(Queue));
+  initialisation_file (FileAttenteTrame);
 	printf("Lancement du capteur. . .\n");
 
 	fd = open_port(); /* open device for read&write*/
@@ -79,7 +79,7 @@ int open_port(void)
   struct termios options;
   int fd;
 //  fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-  fd = open("/dev/ttyAMA0", O_RDWR); // open device for read&write
+  fd = open("/dev/ttyUSB0", O_RDWR); // open device for read&write
   if (fd==-1)
     printf("Erreur ouverture port !!!\n");
   else
