@@ -1,7 +1,7 @@
 #include "Thread_envoie_Pi.h"
 #include "Thread_reception_Pi.h"
 
-extern File* fileAttenteTrame;
+extern Queue* QueueAttenteTrame;
 extern char	chaine[];
 extern char* chaine_trame;
 extern int tempsAttente;
@@ -17,7 +17,7 @@ void envoie_ACK()
 	char trame[] = "Y00ACKW"; // Trame d'acquittement
 	
 	// Envoie sur le port (enfiler)
-	file_enqueue(&fileAttenteTrame, trame);
+	Queue_enqueue(&QueueAttenteTrame, trame);
 }
 
 void envoie_STOP()
@@ -25,7 +25,7 @@ void envoie_STOP()
 	char trame[] = "Q03STOPW"; // Trame d'extinction
 	
 	// Envoie sur le port (enfiler)
-	file_enqueue(&fileAttenteTrame, trame);
+	Queue_enqueue(&QueueAttenteTrame, trame);
 }
 
 int load_frequence()
@@ -62,7 +62,7 @@ void envoie_frequence()
 	
 	
 	// Envoie sur le port
-	file_enqueue(&fileAttenteTrame, trame);
+	Queue_enqueue(&QueueAttenteTrame, trame);
 }
 
 void save_trame_envoyer(char trame[])
@@ -86,11 +86,11 @@ void* envoie_trames() /* Fonction Thread */
 
 	while(1)
 	{
-		if(file_nombre(fileAttenteTrame) > 0) /* Element(s) dans la file */
+		if(Queue_nombre(QueueAttenteTrame) > 0) /* Element(s) dans la file */
 		{
 			// On envoie les trames par ordre d'arrivee
-			strcpy(chaine_trame, file_qeek(fileAttenteTrame)); /* Lecture de la tete de file */
-			file_dequeue(&fileAttenteTrame); /* Supprime l'element en tête de file*/
+			strcpy(chaine_trame, Queue_qeek(QueueAttenteTrame)); /* Lecture de la tete de file */
+			Queue_dequeue(&QueueAttenteTrame); /* Supprime l'element en tête de file*/
 
 			i = 0;
 			while(i < TAILLE_TRAME && !chaine_trame[i] != '\0') /*envoi de la trame*/
@@ -104,7 +104,7 @@ void* envoie_trames() /* Fonction Thread */
 				save_trame_envoyer(chaine_trame);
 			else
 				// Si la centrale n'a pas recu la trame
-				file_enqueue(&fileAttenteTrame, chaine_trame);
+				Queue_enqueue(&QueueAttenteTrame, chaine_trame);
 			
 			
 		}

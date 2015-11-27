@@ -1,7 +1,7 @@
 #include "Thread_reception_PC.h"
 
 
-extern	File* fileAttenteTrame;
+extern	Queue* QueueAttenteTrame;
 extern	char	chaine[];
 extern	char* chaine_trame;
 extern	int tempsAttente;

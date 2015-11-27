@@ -11,13 +11,13 @@
 #include <pthread.h>
 #include <assert.h>
 
-#include "./Thread_envoie_Pi.h"
-#include "./Thread_reception_Pi.h"
-#include "File/File.h"
+#include "Thread_envoie_Pi.h"
+#include "Thread_reception_Pi.h"
+#include "Queue.h"
 
 #define TAILLE_TRAME 20
 
-File* fileAttenteTrame = NULL;
+Queue* QueueAttenteTrame = NULL;
 char	chaine[]="*1111111111111111111";
 char* chaine_trame = (char *)&chaine[0];
 
@@ -36,7 +36,7 @@ int main()
 	pthread_t Thread_envoie;
 	pthread_t Thread_reception;
 	
-	fileAttenteTrame = (File*) malloc(sizeof(File));
+	QueueAttenteTrame = (Queue*) malloc(sizeof(Queue));
 
 	int rc;
 	
@@ -58,8 +58,6 @@ int main()
 		rc = pthread_create(&Thread_envoie, NULL, envoie_trames, NULL);
 		assert(0 == rc);
 		printf("Creation thread envoie trame en tete de file\n");
-		
-		
 	}
 
 	

@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./Thread_envoie_PC.h"
-#include "./Thread_reception_PC.h"
-#include "File/File.h"
+#include "Thread_envoie_PC.h"
+#include "Thread_reception_PC.h"
+#include "Queue.h"
 
 
 #define TAILLE_TRAME 20
 
-File* fileAttenteTrame = NULL;
+Queue* QueueAttenteTrame = NULL;
 char	chaine[]="*1111111111111111111";
 char* chaine_trame = (char *)&chaine[0];
 
@@ -34,7 +34,7 @@ int main()
 	int rc;
 	void *retval;
 
-  fileAttenteTrame = (File*) malloc(sizeof(File));
+  QueueAttenteTrame = (Queue*) malloc(sizeof(Queue));
 	printf("Lancement du capteur. . .\n");
 
 	fd = open_port(); /* open device for read&write*/
